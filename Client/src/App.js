@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 // import { useState } from 'react'
+import './index.css'
 
 import Services from './Component/Services'
 import Home from './Component/Home'

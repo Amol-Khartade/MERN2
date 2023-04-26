@@ -26,7 +26,7 @@ function Hero() {
 						</p>
 						<div className="flex items-center">
 							<Link to="/Contact">
-								<button className="inline-flex items-center rounded-full border-black bg-amber-500 border-0 py-2 px-4 text-white bg-gradient-to-r from-blue to-orange hover:from-pink hover:to-yellow mx-8 my-8">
+								<button className="inline-flex items-center rounded-full border-black bg-amber-500 border-2 py-2 px-4 text-white bg-gradient-to-r from-sky-blue-400 to-sky-orange-400 hover:from-sky-blue-600 hover:to-sky-orange-600 hover:text-sky-blue-300 mx-8 my-8">
 									Contact Us
 								</button>
 							</Link>

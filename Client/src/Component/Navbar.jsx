@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { styles } from '../styles'
+import { NavLink } from 'react-router-dom'
+
 import { logo } from '../assets'
 
 const Navbar = () => {
@@ -20,7 +20,7 @@ const Navbar = () => {
 					className="flex items-center px-3 py-2 rounded text-black-500 hover:text-black-400"
 				>
 					<svg
-						className={`fill-current h-3 w-3 ${
+						className={` h-3 w-3 fill-sky-blue-400  hover:fill-sky-orange-400 ${
 							isOpen ? 'hidden' : 'block'
 						}`}
 						viewBox="0 0 20 20"
@@ -30,7 +30,7 @@ const Navbar = () => {
 					</svg>
 
 					<svg
-						className={`fill-current h-3 w-3 ${
+						className={` h-3 w-3 fill-sky-blue-400  hover:fill-sky-orange-400 ${
 							isOpen ? 'block' : 'hidden'
 						}`}
 						viewBox="0 0 20 20"
@@ -46,49 +46,51 @@ const Navbar = () => {
 					isOpen ? 'block' : 'hidden'
 				}`}
 			>
-				<div className="text-sm lg:flex-grow">
-					<a
-						href="#/"
-						className="block mt-4 lg:inline-block lg:mt-0 hover:blue-text-gradient mr-4 blue-text-gradient text-[20px] px-5"
+				<div className="text-sm lg:flex-grow lg:pt-0 sm:pt-3">
+					<NavLink
+						exact
+						to="/"
+						activeStyle={{ color: '#ef3c07' }}
+						className="block mt-4 lg:inline-block lg:mt-0  hover:text-sky-orange-600 mr-4 text-sky-blue-400 hover:text-[21px] text-[20px] px-5 transition duration-300"
 					>
-						<Link to="/">Home</Link>
-					</a>
+						Home
+					</NavLink>
 
-					<a
-						href="/#"
-						className="block mt-4 lg:inline-block lg:mt-0 hover:blue-text-gradient mr-4 blue-text-gradient text-[20px] px-5"
+					<NavLink
+						to="/About"
+						className="block mt-4 lg:inline-block lg:mt-0 hover:text-sky-orange-600 mr-4 text-sky-blue-400 hover:text-[21px] text-[20px] px-5 transition duration-300"
 					>
-						<Link to="/About">About Us</Link>
-					</a>
+						About Us
+					</NavLink>
 
-					<a
-						href="/#"
-						className="block mt-4 lg:inline-block lg:mt-0 hover:blue-text-gradient mr-4 blue-text-gradient text-[20px] px-5"
+					<NavLink
+						to="/Services"
+						className="block mt-4 lg:inline-block lg:mt-0 hover:text-sky-orange-600 mr-4 text-sky-blue-400 hover:text-[21px] text-[20px] px-5 transition duration-300"
 					>
-						<Link to="/Services">Services</Link>
-					</a>
+						Services
+					</NavLink>
 
-					<a
-						href="/#"
-						className="block mt-4 lg:inline-block lg:mt-0 hover:orange-text-gradient mr-4 blue-text-gradient text-[20px] px-5"
+					<NavLink
+						to="/Contact"
+						className="block mt-4 lg:inline-block lg:mt-0 hover:text-sky-orange-600 mr-4 text-sky-blue-400 hover:text-[21px] text-[20px] px-5 transition duration-300"
 					>
-						<Link to="/Contact">Contact Us</Link>
-					</a>
+						Contact Us
+					</NavLink>
 				</div>
 
 				<div>
-					<Link to="/SignUP">
-						<button className="inline-flex items-center rounded-full border-black bg-amber-500 border-2 py-2 px-4 text-white bg-gradient-to-r from-blue to-orange hover:from-pink hover:to-yellow mx-2">
+					<NavLink to="/SignUP">
+						<button className="inline-flex items-center rounded-full border-black bg-amber-500 border-2 py-2 px-4 text-white bg-gradient-to-r from-sky-blue-400 to-sky-orange-400 hover:from-sky-blue-600 hover:to-sky-orange-600 hover:text-sky-blue-300 lg:mx-2 sm:mx-4 lg:mt-0 sm:mt-8">
 							Sign Up
 						</button>
-					</Link>
+					</NavLink>
 				</div>
 				<div>
-					<Link to="/LogIn">
-						<button className="inline-flex items-center rounded-full border-black bg-amber-500 border-2 py-2 px-4 text-white bg-gradient-to-r from-blue to-orange hover:from-pink hover:to-yellow mx-2">
+					<NavLink to="/LogIn">
+						<button className="inline-flex items-center rounded-full border-black bg-amber-500 border-2 py-2 px-4 text-white bg-gradient-to-r from-sky-blue-400 to-sky-orange-400 hover:from-sky-blue-600 hover:to-sky-orange-600 hover:text-sky-blue-300 lg:mx-2 sm:mx-4">
 							Log In
 						</button>
-					</Link>
+					</NavLink>
 				</div>
 			</div>
 		</nav>
