@@ -8,7 +8,7 @@ function Hero() {
 	return (
 		<div className="w-screen h-[calc(100vh-5rem)]">
 			<div
-				className="bg-cover bg-center bg-no-repeat h-full w-full"
+				className="bg-cover bg-center bg-no-repeat h-full w-full bg-fixed bg-white-950"
 				style={{ backgroundImage: `url(${herobg})` }}
 			>
 				<div className="container mx-auto flex flex-col my-auto align-middle h-full">
@@ -19,6 +19,7 @@ function Hero() {
 							<span className="text-violet-500">Perfectness</span>{' '}
 							in Web Services improves the productivity.
 						</h1>
+
 						<p
 							className={`${styles.heroSubText} mt-2 text-white-100 orange-text-gradient ml-8`}
 						>

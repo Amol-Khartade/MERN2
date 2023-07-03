@@ -1,27 +1,47 @@
-const express = require("express")
-const mongoose = require("mongoose")
-const cors = require("cors")
-const { response } = require("express")
+const express = require('express')
+const session = require('express-session')
+const cors = require('cors')
+const dotenv = require('dotenv')
+const mongoose = require('mongoose')
+const passport = require('passport')
 
+// Load environment variables from .env file
+dotenv.config()
+require('./config/connectdb')
+
+// Initialize Express
 const app = express()
-const port = process.env.PORT || 5000 
-app.use(cors())
+const port = process.env.PORT || 5000
+
+// Enable CORS
+app.use(cors({ origin: '*' }))
+app.options('*', cors())
+
+// Middleware is used to restrict user access to particular data
 
 app.use(express.json())
-app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({ extended: true }))
 
+// Configure session
+app.use(
+	session({
+		secret: process.env.JWT_SECRET,
+		resave: false,
+		saveUninitialized: false,
+	})
+)
 
-mongoose.connect("mongodb+srv://ashishwanjare90:ashish%4090@merndb.ecovqwl.mongodb.net/?retryWrites=true&w=majority").then(()=>{
-    console.log("DATABASE CONNECTED")
-}).catch((error)=>{
-    console.log(error)
-})
+// Initialize Passport &  Use routes
+require('./config/passport')(passport)
+app.use(passport.initialize())
+app.use(passport.session())
+app.use('/auth', require('./routes/authRoutes'))
 
+// Import the userRoutes.js file and Use the userRoutes middleware
+const userRoutes = require('./routes/userRoutes')
+app.use('/users', userRoutes)
 
-app.get("/", (req,res)=>{
-    res.send("Application is working")
-})
-
-app.listen(port, ()=>{
-    console.log(`app listening at port ${port}`)
+// Start the server
+app.listen(port, () => {
+	console.log(`Server is running at port ${port}`)
 })

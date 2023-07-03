@@ -3,7 +3,7 @@ module.exports = {
 	content: ['./src/**/*.{js,jsx,ts,tsx}'],
 	theme: {
 		screens: {
-			sm: '640px',
+			sm: '380px',
 			md: '768px',
 			lg: '1024px',
 			xl: '1280px',
@@ -16,6 +16,13 @@ module.exports = {
 			orange: '#ff7849',
 			green: '#13ce66',
 			yellow: '#ffc82c',
+			blueviolet: '#9747ff',
+			'white-color': '#fcfcfc',
+			'text-primary-color': '#11142d',
+			'nd-text-color': '#808191',
+			'black-color': '#1a1d1f',
+			'text-color-dark': '#efefef',
+			'nd-color-dark': '#6f767e',
 			'sky-blue': {
 				50: '#eefafd',
 				100: '#d4f2f9',
@@ -69,8 +76,11 @@ module.exports = {
 				900: '#3d3d3d',
 				950: '#292929',
 			},
+			fontFamily: {
+				manrope: 'Manrope',
+			},
 		},
 		extend: {},
 	},
-	plugins: [],
+	plugins: [require('@tailwindcss/aspect-ratio')],
 }

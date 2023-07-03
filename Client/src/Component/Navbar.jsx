@@ -3,7 +3,10 @@ import { NavLink } from 'react-router-dom'
 
 import { logo } from '../assets'
 
-const Navbar = () => {
+const Navbar = ({ user }) => {
+	const logout = () => {
+		window.open('http://localhost:5000/auth/logout', '_self')
+	}
 	const [isOpen, setIsOpen] = useState(false)
 
 	return (
@@ -92,6 +95,23 @@ const Navbar = () => {
 						</button>
 					</NavLink>
 				</div>
+				{user ? (
+					<ul className="list">
+						<li className="listItem">
+							<img src={user.photos[0].value} alt="" />
+						</li>
+						<li className="listItem text-white-50 text-[18px] p-4">
+							{user.displayName}
+						</li>
+						<li className="listItem  text-white-50 text-[18px] p-4">
+							Logout
+						</li>
+					</ul>
+				) : (
+					<NavLink className="link" to="login">
+						Login
+					</NavLink>
+				)}
 			</div>
 		</nav>
 	)
