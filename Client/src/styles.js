@@ -9,8 +9,12 @@ const styles = {
 		'text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px]',
 
 	sectionHeadText:
-		'text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] uppercase',
+		'text-white font-black md:text-[40px] sm:text-[30px] xs:text-[20px] text-[30px] uppercase',
 	sectionSubText: 'sm:text-[18px] text-[14px] text-secondary tracking-wider',
+
+	dashHeadText:
+		'text-white font-medium lg:text-[64px] sm:text-[32px] xs:text-[24px] text-[18px] lg:leading-[64px] uppercase',
+	dashSubText: 'sm:text-[18px] text-[14px] text-secondary tracking-wider',
 }
 
 export { styles }
