@@ -1,22 +1,6 @@
-// userController.js
-
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { User } = require('../models/user');
 
-// Controller function to handle user authentication
-exports.getUser = (req, res) => {
-  // Check if the user is authenticated
-  if (req.isAuthenticated()) {
-    // User is authenticated, return the user data
-    res.json(req.user);
-  } else {
-    // User is not authenticated, return an error or empty response
-    res.status(401).json({ message: 'Unauthorized' });
-  }
-};
-
-// API for Email Login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -32,16 +16,14 @@ exports.login = async (req, res) => {
       // Incorrect password
       return res.status(401).json({ message: 'Incorrect password' });
     }
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-};
+}
 
-// API for Email Signup
 exports.signup = async (req, res) => {
-  const { firstName, lastName, contact, dob, email, password, con_password } =
-    req.body;
+  const { firstName, lastName, contact, dob, email, password, con_password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -52,7 +34,6 @@ exports.signup = async (req, res) => {
       // Create a new user and save it in the database
       const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
       const newUser = new User({
-        id: mongoose.Types.ObjectId().toString(), // Generate a unique ID
         firstName,
         lastName,
         contact,
@@ -75,7 +56,6 @@ exports.logout = (req, res) => {
   res.status(200).json({ message: 'Logout successful' });
 };
 
-// Middleware function to ensure user is authenticated
 exports.ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
     // User is authenticated, proceed to the next middleware or route handler

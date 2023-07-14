@@ -1,10 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
 import { styles } from '../styles'
 import { profile, herobg } from '../assets'
 import { demos } from '../constants'
 
-const Dashboard = () => {
+const Dashboard = ({ userId }) => {
+	const [user, setUser] = useState(null)
+
+	useEffect(() => {
+		const fetchUserDetails = async () => {
+			try {
+				let ID = localStorage.getItem('User')
+				const response = await fetch(`http://localhost:5000/user/${ID}`)
+				const data = await response.json()
+				setUser(data)
+			} catch (error) {
+				console.error(error)
+			}
+		}
+
+		fetchUserDetails()
+	}, [userId])
+
+	if (!user) {
+		return <div>Loading...</div>
+	}
 	return (
 		<>
 			<section className={`grid gap-2 ${styles.paddingX} pt-5`}>
@@ -23,25 +44,24 @@ const Dashboard = () => {
 
 					<div className="flex h-auto max-w-full rounded-lg shadow-lg shadow-sky-blue-700 bg-white-100 ">
 						<div className="w-3/5 justify-center items-center my-4">
-							{/* <ul>
-								{data.map((item) => (
-									<li key={item.id}>{item.name}</li>
-								))}
-							</ul> */}
-
-							<span
-								className={`${styles.dashSubText} font-bold justify-center items-center my-2 mx-2 text-white-950 text-[16px] flex`}
+							<h1
+								className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
 							>
-								Web Developer
-								<span
-									className={`orange-text-gradient ${styles.sectionSubText}  items-center  mx-1`}
-								>
-									@
-								</span>
+								{user.firstName} {user.lastName}
+							</h1>
+							<span
+								className={`${styles.dashSubText} justify-center items-center mx-2 text-white-950 text-[16px] flex`}
+							>
+								{user.email}
 							</span>
 
 							<span
-								className={`${styles.dashSubText} justify-center items-center my-2 mx-2 text-dark-blue  font-normal flex`}
+								className={`blue-text-gradient ${styles.sectionSubText} justify-center items-center flex`}
+							>
+								@
+							</span>
+							<span
+								className={`${styles.dashSubText} justify-center items-center mx-2 text-white-950 text-[16px] flex`}
 							>
 								SkyAge IT Services Pvt. Ltd.
 							</span>

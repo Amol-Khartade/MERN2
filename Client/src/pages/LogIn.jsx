@@ -39,7 +39,8 @@ const LogIn = () => {
 			.then((response) => {
 				// Assuming the response contains a token or user data
 				const user = response.data
-
+				localStorage.setItem('User', response.data._id)
+				console.log(response.data)
 				// Set the user in state
 				setUser(user)
 

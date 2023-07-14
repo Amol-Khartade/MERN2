@@ -1,10 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+
 import { styles } from '../styles'
-import { profile } from '../assets'
-import { herobg } from '../assets'
+import { profile, herobg } from '../assets'
 import { demos } from '../constants'
 
-const Demo = () => {
+const Demo = ({ userId }) => {
+	const [user, setUser] = useState(null)
+
+	useEffect(() => {
+		const fetchUserDetails = async () => {
+			try {
+				let ID = localStorage.getItem('User')
+				const response = await fetch(`http://localhost:5000/user/${ID}`)
+				const data = await response.json()
+				setUser(data)
+			} catch (error) {
+				console.error(error)
+			}
+		}
+
+		fetchUserDetails()
+	}, [userId])
+
+	if (!user) {
+		return <div>Loading...</div>
+	}
 	return (
 		<section className={`grid gap-2 ${styles.paddingX}`}>
 			<div className="col-start-1 col-span-4 h-screen items-center justify-center pl-72 md:pl-72 sm:pl-20">
@@ -20,50 +41,12 @@ const Demo = () => {
 					</h1>
 				</div>
 
-				<div className="flex h-auto max-w-full rounded-lg shadow-xl bg-white-200 ">
-					<div className="w-3/5 ">
-						<h1
-							className={`${styles.dashHeadText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
-						>
-							Amol Khartade
-						</h1>
-						<span
-							className={`${styles.dashSubText} justify-center items-center mx-2 text-white-950 text-[16px] flex`}
-						>
-							Web Developer
-						</span>
-
-						<span
-							className={`blue-text-gradient ${styles.sectionSubText} justify-center items-center flex`}
-						>
-							@
-						</span>
-						<span
-							className={`${styles.dashSubText} justify-center items-center mx-2 text-white-950 text-[16px] flex`}
-						>
-							SkyAge IT Services Pvt. Ltd.
-						</span>
-					</div>
-					<div className="w-2/5 ">
-						<img
-							src={profile}
-							className="justify-center p-4 rounded-lg flex"
-							alt="profile"
-						/>
-						<button className="rounded-lg bg-white-100 hover:bg-white-300 border-0 shadow-md shadow-white-800 mx-3 p-2 py-0 justify-center items-center sm:py-2">
-							Update
-						</button>
-						<button className="rounded-lg bg-white-100 hover:bg-white-300 border-0 shadow-md shadow-white-800 mx-3 p-2 py-0 justify-center items-center sm:py-2">
-							Delete
-						</button>
-					</div>
-				</div>
 				<div className="container mx-auto pt-4">
 					<div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
 						<div class="rounded-lg shadow-xl bg-white-200 pt-2 mt-2 flex items-center justify-center">
 							<div className="flex items-center justify-center">
 								<h1
-									className={`${styles.dashHeadText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
+									className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
 								>
 									Demo Details
 								</h1>
@@ -97,7 +80,7 @@ const Demo = () => {
 							</div>
 						</div>
 						<h1
-							className={`${styles.dashHeadText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
+							className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
 						>
 							Company Details
 						</h1>
@@ -129,7 +112,7 @@ const Demo = () => {
 							</div>
 						</div>
 						<h1
-							className={`${styles.dashHeadText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
+							className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
 						>
 							Education Background
 						</h1>

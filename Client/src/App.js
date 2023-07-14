@@ -1,11 +1,16 @@
-import './index.css'
 import React, { useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
+} from 'react-router-dom'
 
 import SideBar from './component/SideBar'
 import Navbar from './component/Navbar'
 import Footer from './component/Footer'
 import Cards from './component/Cards'
+import NewDemo from './component/NewDemo'
 
 import Services from './pages/Services'
 import Home from './pages/Home'
@@ -14,6 +19,7 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import LogIn from './pages/LogIn'
 import SignUp from './pages/SignUp'
+import LogoutPage from './pages/LogoutPage'
 
 import Dashboard from './dashboard/Dashboard'
 import Demo from './dashboard/Demo'
@@ -22,8 +28,6 @@ import Company from './dashboard/Company'
 import Settings from './dashboard/Settings'
 import Logout from './dashboard/Logout'
 import Profile from './dashboard/Profile'
-
-// const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const App = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -43,14 +47,12 @@ const App = () => {
 	const handleLogout = () => {
 		setIsLoggedIn(false)
 		// Additional logic for logout
+		return <Navigate to="/LogIn" replace />
 	}
 
 	return (
-		// <Provider store={store}>
-
-		<BrowserRouter>
+		<Router>
 			<Navbar />
-
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route
@@ -67,10 +69,8 @@ const App = () => {
 				/>
 				<Route path="/SignUp" element={<SignUp />} />
 			</Routes>
-
-			<Footer />
-		</BrowserRouter>
-		// </Provider>
+			{/* <Footer /> */}
+		</Router>
 	)
 }
 
@@ -87,6 +87,7 @@ const ProtectedRoutes = ({ handleLogout }) => {
 				<Routes>
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/Demo" element={<Demo />} />
+					<Route path="/NewDemo" element={<NewDemo />} />
 					<Route path="/Education" element={<Education />} />
 					<Route path="/Company" element={<Company />} />
 					<Route path="/Profile" element={<Profile />} />

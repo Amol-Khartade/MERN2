@@ -1,15 +1,27 @@
 // SideBar.js
 
 import React, { Component, useState } from 'react'
-import { styles } from '../styles'
-import { logo } from '../assets'
-import { profile } from '../assets'
-import { dashLinks } from '../constants'
 import { NavLink } from 'react-router-dom'
+import axios from 'axios'
+
+import { styles } from '../styles'
+import { logo, profile } from '../assets'
+import { dashLinks } from '../constants'
 
 const SideBar = () => {
 	const [open, setOpen] = useState(true)
 	const [submenuOpen, setSubmenuOpen] = useState(false)
+	const handleLogout = async () => {
+		try {
+			await axios.post('/logout') // Adjust the API endpoint URL as per your server setup
+			window.location.href = '/login' // Redirect to the login page
+		} catch (error) {
+			console.error(error)
+		}
+		console.log('logout called')
+		// localStorage.clear()
+	}
+
 	return (
 		<>
 			<header className="flex w-screen items-center h-20 px-6 sm:px-10 max-w-full bg-dark-blue">
@@ -89,7 +101,10 @@ const SideBar = () => {
 								/>
 							</svg>
 						</button>
-						<button className="relative p-2 text-white-100 hover:bg-sky-blue-900 hover:text-white-300 focus:bg-sky-blue-900 focus:text-white-300 rounded-full">
+						<button
+							onClick={() => handleLogout}
+							className="relative p-2 text-white-100 hover:bg-sky-blue-900 hover:text-white-300 focus:bg-sky-blue-900 focus:text-white-300 rounded-full"
+						>
 							<span className="sr-only">Log out</span>
 							<svg
 								aria-hidden="true"
@@ -105,6 +120,12 @@ const SideBar = () => {
 									d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
 								/>
 							</svg>
+						</button>
+						<button
+							className={`${styles.dashSubText} text-sky-orange-500`}
+							onClick={handleLogout}
+						>
+							Logout
 						</button>
 					</div>
 				</div>
@@ -186,11 +207,11 @@ const SideBar = () => {
 												className={`text-sm text-white-100 flex items-center gap-x- bg-transparent  hover:text-white-100    focus:outline-none cursor-pointer  p-2 hover:bg-sky-blue-900 focus:bg-sky-blue-900 rounded-lg transition-300 mt-9 px-2 `}
 											>
 												<span
-													className={`w-5 h-5 block float-left mr-4  h-full items-center relative group
+													className={`w-5  block float-left mr-4  h-full items-center relative group
 												}`}
 												>
 													{menu.icon}
-													<div className="absolute left-0 flex items-center hidden ml-6 group-hover:flex ">
+													<div className="absolute left-0  items-center hidden ml-6 group-hover:flex ">
 														{/* <div className="w-8 h-8 -mr-2 rotate-45 bg-blue border border-sky-orange-500"></div> */}
 														<span className="w-full h-full lg:invisible md:visible sm:visible relative z-10 p-2 text-sm leading-none text-white whitespace-no-wrap bg-dark-blue shadow-lg border border-sky-orange-500 rounded-lg">
 															{menu.title}
@@ -228,26 +249,19 @@ const SideBar = () => {
 													</button>
 												)}
 											</li>
+
 											{menu.submenu &&
 												submenuOpen &&
 												open && (
 													<ul>
-														{menu.submenuItems.map(
-															(
-																submenuItem,
-																index
-															) => (
-																<li
-																	key={index}
-																	className={`text-sm text-white-100 flex items-center gap-x- bg-transparent rounded-md hover:text-white-100    focus:outline-none cursor-pointer p-2 px-4 hover:bg-sky-blue-900 transition-300`}
-																>
-																	{
-																		submenuItem.title
-																	}
-																</li>
-															)
-														)}
-													</ul>
+													{menu.submenuItems.map((submenuItem, index) => (
+													  <NavLink to={submenuItem.id} key={index}>
+														<li className={`text-sm text-white-100 flex items-center gap-x- bg-transparent rounded-md hover:text-white-100 focus:outline-none cursor-pointer p-2 px-4 hover:bg-sky-blue-900 transition-300`}>
+														  {submenuItem.title}
+														</li>
+													  </NavLink>
+													))}
+												  </ul>
 												)}
 										</NavLink>
 									))}
