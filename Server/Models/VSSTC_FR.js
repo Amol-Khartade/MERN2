@@ -1,7 +1,10 @@
 const mongoose = require("mongoose")
 
-const FeeRecord = new mongoose.Schema({
-
+const feeRecordSchema = new mongoose.Schema({
+    id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
     Employee_ID: {
         type: String,
         default: ""
@@ -70,6 +73,6 @@ const FeeRecord = new mongoose.Schema({
 
 })
 
-const Fee_Record = mongoose.model("FeeRecord", FeeRecord )
+const FeeRecord = mongoose.model("FeeRecord", feeRecordSchema )
 
-module.exports = Fee_Record
+module.exports = FeeRecord

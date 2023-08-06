@@ -1,54 +1,61 @@
-import { React, useState, useEffect } from 'react'
-import axios from 'axios'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import Cookies from 'js-cookie'
+import api from '../utils/api'
+import { useDispatch } from 'react-redux'
+import { loginSuccess } from '../redux/actions/authAction'
 import { ser_ban, login, herobg } from '../assets'
 import { styles } from '../styles'
 
 const LogIn = () => {
+	const dispatch = useDispatch()
 	const [user, setUser] = useState(null)
-	useEffect(() => {
-		axios
-			.get('http://localhost:5000/getUser', { withCredentials: true })
-			.then((response) => {
-				if (response.data) {
-					setUser(response.data)
-				}
-			})
-			.catch((error) => {
-				console.error('Error:', error)
-			})
-	}, [])
+	const [email, setEmail] = useState('')
+	const [password, setPassword] = useState('')
+	const navigate = useNavigate()
 
 	const handleGoogle = () => {
 		window.location.href = 'http://localhost:5000/auth/google'
 	}
 
-	//Login using EMail and Password
-	const [email, setEmail] = useState('')
-	const [password, setPassword] = useState('')
-	const history = useNavigate()
-
+	// Login using EMail and Password
 	const handleLogin = (e) => {
 		e.preventDefault()
-		const userData = { email, password }
+		const loginData = { email, password }
 
-		// Make the login request to your API
-		axios
-			.post('http://localhost:5000/login', userData)
+		api.post('/login', loginData)
 			.then((response) => {
-				// Assuming the response contains a token or user data
-				const user = response.data
-				localStorage.setItem('User', response.data._id)
-				console.log(response.data)
-				// Set the user in state
-				setUser(user)
+				const message = response.data.message
+				if (message === 'Login successful.') {
+					// Login was successful, extract the user data and token
+					const user = response.data.user
+					const token = response.data.token
 
-				// Redirect the user to the dashboard
-				history('/dashboard')
+					// Assuming the response contains other user data
+					const userData = {
+						userId: user._id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						email: user.email,
+					}
+
+					// Set the user data and token in localStorage for future use
+					localStorage.setItem('userData', JSON.stringify(userData))
+					localStorage.setItem('token', token)
+
+					// Dispatch the loginSuccess action with the userId and other user data
+					dispatch(loginSuccess(token, userData))
+
+					// Redirect the user to the dashboard
+					navigate('/dashboard')
+				} else {
+					// Login failed, handle error (e.g., display an error message to the user)
+					console.error('Login failed:', message)
+				}
 			})
 			.catch((error) => {
 				console.error('Error:', error)
+				// Handle other errors, e.g., display an error message to the user
 			})
 	}
 

@@ -1,7 +1,10 @@
 const mongoose = require("mongoose")
 
-const DemoRecord = new mongoose.Schema({
-
+const demoRecordSchema = new mongoose.Schema({
+    id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userId',
+      },
     Employee_ID: {
         type: String,
         default: ""
@@ -71,6 +74,6 @@ const DemoRecord = new mongoose.Schema({
 
 })
 
-const Demo_Record = mongoose.model("DemoRecord", DemoRecord )
+const DemoRecord = mongoose.model('DemoRecord', demoRecordSchema)
 
-module.exports = Demo_Record
+module.exports = DemoRecord

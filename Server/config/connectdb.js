@@ -20,12 +20,3 @@ mongoose.connect(
 const express = require('express')
 const app = express()
 const cors = require('cors')
-
-// mongoose
-// 	.connect(DB)
-// 	.then(() => {
-// 		console.log('Database is CONNECTED to MongoDB Atlas')
-// 	})
-// 	.catch((err) => {
-// 		console.log('Database is NOT CONNECTED to MongoDB Atlas')
-// 	})

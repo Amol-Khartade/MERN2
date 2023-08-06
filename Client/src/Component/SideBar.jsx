@@ -2,19 +2,50 @@
 
 import React, { Component, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { authAction } from '../redux/actions/authAction'
+import { logout, loginSuccess } from '../redux/actions/authAction'
+
 import axios from 'axios'
+
+import { FaSignOutAlt } from 'react-icons/fa'
 
 import { styles } from '../styles'
 import { logo, profile } from '../assets'
 import { dashLinks } from '../constants'
 
 const SideBar = () => {
+	const history = useNavigate()
+	const dispatch = useDispatch()
+
+	// Access the userData, firstName, lastName, and email from the Redux store
+	const userData = useSelector((state) => state.auth.userData)
+	// const userId = userData.userId
+	const firstName = userData.firstName
+	const lastName = userData.lastName
+	const email = userData.email
+
 	const [open, setOpen] = useState(true)
 	const [submenuOpen, setSubmenuOpen] = useState(false)
+	const [user, setUser] = useState(null)
+
 	const handleLogout = async () => {
 		try {
-			await axios.post('/logout') // Adjust the API endpoint URL as per your server setup
-			window.location.href = '/login' // Redirect to the login page
+			await axios
+				.post('/logout') // Adjust the API endpoint URL as per your server setup
+				.then((response) => {
+					// Clear user data from state and sessionStorage on successful logout
+					setUser(null)
+					localStorage.removeItem('userData')
+					localStorage.removeItem('token')
+
+					dispatch(logout())
+
+					console.log(response.data)
+					// Redirect the user to the login page or homepage
+					history('/login')
+				})
 		} catch (error) {
 			console.error(error)
 		}
@@ -43,8 +74,8 @@ const SideBar = () => {
 					>
 						<path
 							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
+							strokeLinejoin="round"
+							strokeWidth="2"
 							d="M4 6h16M4 12h16M4 18h7"
 						/>
 					</svg>
@@ -55,7 +86,7 @@ const SideBar = () => {
 						<span className="sr-only"></span>
 						<div className="hidden md:flex md:flex-col md:items-end md:leading-tight">
 							<span className="font-semibold text-white-100">
-								Amol Khartade
+								{firstName} {lastName}
 							</span>
 							<span className="text-sm text-white-300">
 								MERN Developer
@@ -75,9 +106,8 @@ const SideBar = () => {
 							className="hidden sm:block h-6 w-6 text-white-100"
 						>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-								clip-rule="evenodd"
 							/>
 						</svg>
 					</button>
@@ -94,38 +124,18 @@ const SideBar = () => {
 								className="h-6 w-6"
 							>
 								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
 									d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
 								/>
 							</svg>
 						</button>
 						<button
-							onClick={() => handleLogout}
-							className="relative p-2 text-white-100 hover:bg-sky-blue-900 hover:text-white-300 focus:bg-sky-blue-900 focus:text-white-300 rounded-full"
-						>
-							<span className="sr-only">Log out</span>
-							<svg
-								aria-hidden="true"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-								className="h-6 w-6"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-								/>
-							</svg>
-						</button>
-						<button
-							className={`${styles.dashSubText} text-sky-orange-500`}
+							className="relative px-4 py-2 text-lg text-white-100 hover:bg-sky-blue-900 hover:text-white-300 focus:bg-sky-blue-900 focus:text-white-300 rounded-full"
 							onClick={handleLogout}
 						>
-							Logout
+							<FaSignOutAlt />
 						</button>
 					</div>
 				</div>
@@ -136,33 +146,15 @@ const SideBar = () => {
 						className={`flex-col h-screen p-5 pt-8  bg-dark-blue lg:w-72 sm:w-20 md:w-20
 					 duration-300 relative `}
 					>
-						{/* <button
-						className={`bg-sky-orange-700 text-dark-blue border border-dark-blue text-3xl rounded-full absolute -right-4 top-9 ${
-							!open && 'rotate-180 duration-300'
-						}`}
-						onClick={() => setOpen(!open)}
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							data-name="Layer 1"
-							viewBox="0 0 24 24"
-							id="left-arrow"
-							className="w-10 h-10"
-							fill="none"
-							stroke="currentColor"
-						>
-							<path d="M17,11H9.41l3.3-3.29a1,1,0,1,0-1.42-1.42l-5,5a1,1,0,0,0-.21.33,1,1,0,0,0,0,.76,1,1,0,0,0,.21.33l5,5a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L9.41,13H17a1,1,0,0,0,0-2Z"></path>
-						</svg>
-					</button> */}
 						<div className="space-y-3">
-							<div className="flex items-center justify-items-center p-0">
+							{/* <div className="flex items-center justify-items-center p-0">
 								<h2
 									className={`${styles.sectionHeadText} font-bold orange-text-gradient lg:visible sm:invisible md:invisible`}
 								>
 									Dashboard
 								</h2>
-							</div>
-							<div className="relative ">
+							</div> */}
+							<div className="relative hidden sm:block md:block">
 								<span className="absolute inset-y-0 left-0 flex items-center py-4">
 									<button
 										type="submit"
@@ -254,14 +246,28 @@ const SideBar = () => {
 												submenuOpen &&
 												open && (
 													<ul>
-													{menu.submenuItems.map((submenuItem, index) => (
-													  <NavLink to={submenuItem.id} key={index}>
-														<li className={`text-sm text-white-100 flex items-center gap-x- bg-transparent rounded-md hover:text-white-100 focus:outline-none cursor-pointer p-2 px-4 hover:bg-sky-blue-900 transition-300`}>
-														  {submenuItem.title}
-														</li>
-													  </NavLink>
-													))}
-												  </ul>
+														{menu.submenuItems.map(
+															(
+																submenuItem,
+																index
+															) => (
+																<NavLink
+																	to={
+																		submenuItem.id
+																	}
+																	key={index}
+																>
+																	<li
+																		className={`text-sm text-white-100 flex items-center gap-x- bg-transparent rounded-md hover:text-white-100 focus:outline-none cursor-pointer p-2 px-4 hover:bg-sky-blue-900 transition-300`}
+																	>
+																		{
+																			submenuItem.title
+																		}
+																	</li>
+																</NavLink>
+															)
+														)}
+													</ul>
 												)}
 										</NavLink>
 									))}

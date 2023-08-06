@@ -1,8 +1,11 @@
 const mongoose = require("mongoose")
 
 
-const OfferLetter = new mongoose.Schema({
-    
+const offerLetterSchema = new mongoose.Schema({
+    id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
     Employee_ID: {
         type: String,
         default: ""
@@ -50,6 +53,6 @@ const OfferLetter = new mongoose.Schema({
 })
 
 
-const Offer_Letter = mongoose.model("OfferLetter", OfferLetter )
+const OfferLetter = mongoose.model("OfferLetter",offerLetterSchema )
 
-module.exports = Offer_Letter
+module.exports = OfferLetter

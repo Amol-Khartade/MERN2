@@ -1,152 +1,158 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { authAction } from '../redux/actions/authAction'
 
+import api from '../utils/api'
+import { format } from 'date-fns'
+
+import Loader from '../component/Loader'
+import Card from '../component/Card'
 import { styles } from '../styles'
 import { profile, herobg } from '../assets'
 import { demos } from '../constants'
 
-const Demo = ({ userId }) => {
-	const [user, setUser] = useState(null)
+const Demo = () => {
+	// Retrieve the user data from the Redux store using useSelector:
+	const dispatch = useDispatch()
+
+	// Access the userData, firstName, lastName, and email from the Redux store
+	const userId = useSelector((state) => state.auth._id)
+	const userData = useSelector((state) => state.auth.userData)
+	const firstName = useSelector((state) => state.auth.userData.firstName)
+	const lastName = useSelector((state) => state.auth.userData.lastName)
+	const email = useSelector((state) => state.auth.userData.email)
+
+	const [userDemos, setUserDemos] = useState([])
 
 	useEffect(() => {
-		const fetchUserDetails = async () => {
+		const fetchUserDemos = async () => {
 			try {
-				let ID = localStorage.getItem('User')
-				const response = await fetch(`http://localhost:5000/user/${ID}`)
-				const data = await response.json()
-				setUser(data)
+				if (!userData.userId) {
+					return // Exit if userId is not available
+				}
+
+				const response = await api.get(`/createdemo/${userData.userId}`)
+				const data = response.data
+				setUserDemos(data) // Save the fetched demo data in local state
 			} catch (error) {
 				console.error(error)
+				setUserDemos([]) // Reset the userDemos state in case of an error
 			}
 		}
 
-		fetchUserDetails()
-	}, [userId])
+		fetchUserDemos()
+	}, [userData.userId])
 
-	if (!user) {
-		return <div>Loading...</div>
+	// console.log(userId, setUserDemos)
+
+	if (userDemos.length === 0) {
+		return <Loader />
 	}
 	return (
-		<section className={`grid gap-2 ${styles.paddingX}`}>
-			<div className="col-start-1 col-span-4 h-screen items-center justify-center pl-72 md:pl-72 sm:pl-20">
-				<div
-					className="flex  bg-cover bg-no-repeat h-auto max-w-full rounded-md shadow-xl shadow-dark-blue  py-4 my-8"
-					style={{ backgroundImage: `url(${herobg})` }}
-				>
-					{' '}
-					<h1
-						className={`${styles.sectionHeadText}  justify-center items-center orange-text-gradient py-10 mx-auto`}
+		<>
+			<section className="container">
+				<div className="max-w-screen-xl">
+					<div
+						className="flex bg-cover max-w-full bg-no-repeat h-1/2 rounded-md shadow-xl shadow-dark-blue py-4 my-8"
+						style={{
+							backgroundImage: `url(${herobg})`,
+						}}
 					>
-						Demo
+						<h1
+							className={`${styles.sectionHeadText} justify-center items-center orange-text-gradient mx-auto`}
+						>
+							Demo
+						</h1>
+					</div>
+				</div>
+				<div className="items-center justify-center py-2 mx-auto  hidden xl:block 2xl:block lg:block md:flex sm:flex">
+					<h1
+						className={`${styles.dashSubText} flex-wrap justify-center items-center orange-text-gradient text-[18px]`}
+					>
+						Demo Details
 					</h1>
 				</div>
 
-				<div className="container mx-auto pt-4">
-					<div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
-						<div class="rounded-lg shadow-xl bg-white-200 pt-2 mt-2 flex items-center justify-center">
-							<div className="flex items-center justify-center">
-								<h1
-									className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
-								>
-									Demo Details
-								</h1>
-								<ul className="pt-2 pb-4 space-y-1 text-sm">
-									{demos.map((demo, index) => (
-										<>
-											<li
-												key={index}
-												className={`text-sm text-white-950 flex items-center  px-2`}
-											>
-												<span
-													className={`w-10 h-10 block float-left mr-1 items-center `}
-												>
-													{demo.icon}
-												</span>
-
-												<span
-													className={`flex-1 text-[18px] ${styles.dashSubText}`}
-												>
-													{demo.title + ' :'}
-												</span>
-												<span
-													className={`float-right text-[18px] ${styles.dashSubText} ml-5`}
-												>
-													{demo.count}
-												</span>
-											</li>
-										</>
-									))}
-								</ul>
-							</div>
-						</div>
-						<h1
-							className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
-						>
-							Company Details
-						</h1>
-						<div class="rounded-lg shadow-xl bg-white-200 p-2 py-2 my-2 flex items-center justify-center">
-							<div className="flex items-center justify-center">
-								<ul className="pt-2 pb-4 space-y-1 text-sm">
-									{demos.map((demo, index) => (
-										<>
-											<li
-												key={index}
-												className={`text-sm text-white-950 flex items-center py-2 px-2`}
-											>
-												<span
-													className={`flex-left text-[18px] ${styles.dashSubText}`}
-												>
-													{demo.title + ' :'}
-												</span>
-												<span
-													className={`float-left text-[16px] ml-5 flex-wrap`}
-												>
-													{
-														'Experiance/CompanyName/JoinDate/Projects'
-													}
-												</span>
-											</li>
-										</>
-									))}
-								</ul>
-							</div>
-						</div>
-						<h1
-							className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
-						>
-							Education Background
-						</h1>
-						<div class="rounded-lg shadow-xl bg-white-200 p-2 py-2 my-2 flex items-center justify-center">
-							<div className="flex items-center justify-center">
-								<ul className="pt-2 pb-4 space-y-1 text-sm">
-									{demos.map((demo, index) => (
-										<>
-											<li
-												key={index}
-												className={`text-sm text-white-950 flex items-center py-2 px-2`}
-											>
-												<span
-													className={`flex-1 text-[18px] ${styles.dashSubText}`}
-												>
-													{demo.title + ' :'}
-												</span>
-												<span
-													className={`float-left text-[18px]ml-5`}
-												>
-													{
-														'Institude/College/School/Certificates'
-													}
-												</span>
-											</li>
-										</>
-									))}
-								</ul>
-							</div>
-						</div>
+				<div className="flex h-auto max-w-full rounded-md shadow-md shadow-sky-blue-700 my-5 mx-auto">
+					<h1
+						className={`${styles.dashSubText} hidden lg:block flex-wrap justify-center items-center orange-text-gradient text-[18px] m-auto`}
+					>
+						Demo Details
+					</h1>
+					<div className="flex flex-wrap justify-center gap-2">
+						{demos.map((demo) => (
+							<Card
+								key={demo.id}
+								title={demo.title}
+								data={{ Count: demo.count }}
+								className="w-[250px] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4"
+							/>
+						))}
 					</div>
 				</div>
-			</div>
-		</section>
+
+				<div className="items-center justify-center py-2 mx-auto  hidden xl:block 2xl:block lg:block md:flex sm:flex">
+					<h1
+						className={`${styles.dashSubText} flex-wrap justify-center items-center orange-text-gradient text-[18px]`}
+					>
+						Demo History
+					</h1>
+				</div>
+
+				{/* <h1
+						className={`${styles.dashSubText} hidden lg:block flex-wrap justify-center items-center orange-text-gradient text-[18px] m-auto`}
+					>
+						Demo History
+					</h1> */}
+				<div className="flex h-auto max-w-full items-center justify-center">
+					<table className="h-auto max-w-full border-collapse border  rounded-md shadow-md shadow-sky-blue-700 my-5 p-5 mx-auto border-gray-400 mt-4">
+						<thead>
+							<tr>
+								<th className="border border-gray-400 p-2 w-[250px] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
+									Demo On
+								</th>
+								{/* <th className="border border-gray-400 p-2 w-[250px] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
+          Demo Topic
+        </th> */}
+								<th className="border border-gray-400 p-2 w-[250px] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
+									Date
+								</th>
+								<th className="border border-gray-400 p-2 w-[250px] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
+									Time
+								</th>
+								<th className="border border-gray-400 p-2 w-[250px] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
+									Actions
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{userDemos.map((demo) => (
+								<tr
+									key={demo._id}
+									className="border border-gray-400"
+								>
+									<td className="text-[14px] border border-gray-400 p-2">
+										{demo.demoOn}
+									</td>
+									{/* <td className="border border-gray-400 p-2">{demo.demoTopic}</td> */}
+									<td className="text-[14px] border border-gray-400 p-2">
+										{demo.demoDate}
+									</td>
+									<td className="text-[14px] border border-gray-400 p-2">
+										{demo.demoTime}
+									</td>
+									<td className="border border-gray-400 p-2">
+										<button>
+											{/* ... Delete button code ... */}
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</>
 	)
 }
 

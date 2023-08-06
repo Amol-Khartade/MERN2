@@ -1,38 +1,37 @@
-const express = require("express")
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
-router.get("/OfferLetter", (req, res, next) => {});
+router.get('/OfferLetter', (req, res, next) => {})
 
-router.post("/OfferLetter", (req, res, next) => {});
+router.post('/OfferLetter', (req, res, next) => {})
 
-router.delete("/OfferLetter/:id", (req, res, next) => {})
+router.delete('/OfferLetter/:id', (req, res, next) => {})
 
-module.exports = router;
+module.exports = router
 
-const OfferLetter = require("../Models/VSSTC_OL");
+const OfferLetter = require('../models/VSSTC_OL')
 
-router.get("/OfferLetter", (req, res, next) => {
+router.get('/OfferLetter', (req, res, next) => {
+	OfferLetter.find({}, 'action')
+		.then((data) => res.json(data))
+		.catch(next)
+})
 
-    OfferLetter.find({}, "action")
-    .then(data => res.json(data))
-.catch(next)
-});
+router.post('/OfferLetter', (req, res, next) => {
+	if (req.body.action) {
+		OfferLetter.create(req.body)
+			.then((data) => res.json(data))
+			.catch(next)
+	} else {
+		res.json({
+			error: 'The input field is empty',
+		})
+	}
+})
 
-router.post("/OfferLetter", (req, res, next) => {
-    if(req.body.action){
-        OfferLetter.create(req.body)
-    .then(data => res.json(data))
-    .catch(next)
-    }else {
-    res.json({
-    error: 'The input field is empty'
-    })
-    }
-    });
-
-    router.delete("/OfferLetter/:id", (req, res, next) => {
-        OfferLetter.findOneAndDelete({'_id': req.params.id})
-        .then(data => res.json(data))
-        .catch(next)
-        })
+router.delete('/OfferLetter/:id', (req, res, next) => {
+	OfferLetter.findOneAndDelete({ _id: req.params.id })
+		.then((data) => res.json(data))
+		.catch(next)
+})

@@ -2,32 +2,66 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
+import { FaSignOutAlt } from 'react-icons/fa'
+
+import { styles } from '../styles'
+import { profile, herobg } from '../assets'
+
 const Logout = () => {
 	const navigate = useNavigate()
 	const [error, setError] = useState('')
-
+	const [user, setUser] = useState(null)
+	const history = useNavigate()
 	const handleLogout = async () => {
-		// try {
-		// 	await axios.post('/logout') // Adjust the API endpoint URL as per your server setup
-		// 	window.location.href = '/login' // Redirect to the login page
-		// } catch (error) {
-		// 	console.error(error)
-		// }
+		try {
+			await axios
+				.post('/logout') // Adjust the API endpoint URL as per your server setup
+				.then((response) => {
+					// Clear user data from state and sessionStorage on successful logout
+					setUser(null)
+					// sessionStorage.removeItem('userId')
+					localStorage.removeItem('reduxState')
+
+					console.log(response.data)
+					// Redirect the user to the login page or homepage
+					history('/login')
+				})
+		} catch (error) {
+			console.error(error)
+		}
 		console.log('logout called')
+		// localStorage.clear()
 	}
 
 	return (
 		<div>
-			<h1>Logout</h1>
+			<section className={`grid gap-2 ${styles.paddingX} max-w-full py-10`}>
+				
+				<div
+				className="flex bg-cover bg-no-repeat h-1/2  rounded-md shadow-xl shadow-dark-blue py-4 my-8"
+				style={{ backgroundImage: `url(${herobg})` }}
+			>
+				{' '}
+				<h1
+					className={`${styles.sectionHeadText}  justify-center items-center orange-text-gradient mx-auto`}
+				>
+					Log Out
+				</h1>
+			</div>
+
 			{error && <p className="error">{error}</p>}{' '}
 			{/* Display error message if it exists */}
 			<p>Are you sure you want to logout?</p>
 			<button
-				onClick={()=>handleLogout}
-				className="mb-2 w-full flex justify-center items-center rounded px-6 py-2.5 text-xs font-medium uppercase leading-normal text-white bg-gradient-to-r from-sky-blue-600 to-sky-orange-600 hover:from-sky-blue-800 hover:to-sky-orange-800 hover:text-sky-blue-300 lg:mx-2 sm:mx-4 pb-2.5 pt-3  text-white shadow-[0_4px_9px_-4px_#3b71ca] hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out item-center"
+				className="relative px-4 py-4 text-lg mb-2 w-full flex justify-center items-center rounded font-medium uppercase leading-normal text-white  text-white-100 bg-sky-orange-600 hover:bg-sky-blue-900 hover:text-white-300 focus:bg-sky-blue-900 focus:text-white-300"
+				onClick={handleLogout}
 			>
-				Logout
+				<FaSignOutAlt />
 			</button>
+					
+			</section>
+			
+			
 		</div>
 	)
 }

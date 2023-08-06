@@ -1,7 +1,10 @@
 const mongoose = require("mongoose")
 
-const VSSOnboarding = new mongoose.Schema({
-
+const onboardingSchema = new mongoose.Schema({
+    id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
     Employee_ID: {
         type: String,
         default: ""
@@ -164,6 +167,6 @@ const VSSOnboarding = new mongoose.Schema({
 
 })
 
-const VSS_Onboarding = mongoose.model("VSSOnboarding", VSSOnboarding )
+const Onboarding = mongoose.model("VSSOnboarding", onboardingSchema )
 
-module.exports = VSS_Onboarding
+module.exports = Onboarding

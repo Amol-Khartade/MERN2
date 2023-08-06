@@ -11,10 +11,11 @@ import Navbar from './component/Navbar'
 import Footer from './component/Footer'
 import Cards from './component/Cards'
 import NewDemo from './component/NewDemo'
+import Demos from './component/Demos'
+import ProfilePictureUpload from './component/ProfilePictureUpload'
 
 import Services from './pages/Services'
 import Home from './pages/Home'
-
 import About from './pages/About'
 import Contact from './pages/Contact'
 import LogIn from './pages/LogIn'
@@ -40,19 +41,17 @@ const App = () => {
 	// Function to handle successful login
 	const handleLogin = () => {
 		setIsLoggedIn(true)
-		// Additional logic for successful login
 	}
 
 	// Function to handle logout
 	const handleLogout = () => {
 		setIsLoggedIn(false)
-		// Additional logic for logout
 		return <Navigate to="/LogIn" replace />
 	}
 
 	return (
 		<Router>
-			<Navbar />
+			{!isLoggedIn && <Navbar />}{' '}
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route
@@ -69,7 +68,7 @@ const App = () => {
 				/>
 				<Route path="/SignUp" element={<SignUp />} />
 			</Routes>
-			{/* <Footer /> */}
+			{!isLoggedIn && <Footer handleLogout={handleLogout}  className="lg:pl-40 sm:pl-20 md:pl-20"/>}
 		</Router>
 	)
 }
@@ -83,14 +82,17 @@ const ProtectedRoutes = ({ handleLogout }) => {
 				<SideBar />
 			</aside>
 
-			<main className="col-span-10 mx-auto">
+			<main className="col-start-2 col-span-6 min-h-screen lg:px-20 sm:px-20 md:px-20 lg:pl-40 sm:pl-20 md:pl-20">
 				<Routes>
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/Demo" element={<Demo />} />
 					<Route path="/NewDemo" element={<NewDemo />} />
+					<Route path="/Demos" element={<Demos />} />
 					<Route path="/Education" element={<Education />} />
 					<Route path="/Company" element={<Company />} />
-					<Route path="/Profile" element={<Profile />} />
+					<Route path="/Profile" element={<ProfilePictureUpload />} />
+					<Route path="/ProfilePictureUpload" element={<ProfilePictureUpload />} />
+
 					<Route path="/Settings" element={<Settings />} />
 					<Route
 						path="/Logout"

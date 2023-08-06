@@ -1,274 +1,183 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
+import { FaUpload, FaTrashAlt, FaEdit } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
+import { authAction } from '../redux/actions/authAction'
+
+import api from '../utils/api'
+import Loader from '../component/Loader'
+import SessionExpiredMessage from '../component/SessionExpiredMessage'
+import Card from '../component/Card'
 import { styles } from '../styles'
 import { profile, herobg } from '../assets'
 import { demos } from '../constants'
 
-const Dashboard = ({ userId }) => {
+const Dashboard = () => {
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
+	const userData = useSelector((state) => state.auth.userData)
+	const userId = userData.userId
+	const accessToken = useSelector((state) => state.auth.token)
 	const [user, setUser] = useState(null)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState(null)
 
 	useEffect(() => {
-		const fetchUserDetails = async () => {
-			try {
-				let ID = localStorage.getItem('User')
-				const response = await fetch(`http://localhost:5000/user/${ID}`)
-				const data = await response.json()
-				setUser(data)
-			} catch (error) {
-				console.error(error)
+		// Check if the user is authenticated and the access token is available
+		if (accessToken && userId) {
+			const fetchUserDetails = async () => {
+				try {
+					const response = await api.get(`/user/${userId}`, {
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						},
+					})
+
+					const data = response.data.user // Assuming the API response returns user data directly
+					setUser(data)
+					setLoading(false)
+					console.log(data)
+				} catch (error) {
+					console.error('Error fetching user details:', error)
+					setError('Failed to fetch user details. Please try again.')
+					setUser(null)
+					setLoading(false)
+				}
 			}
+			fetchUserDetails()
+		} else {
+			// If the user is not authenticated, redirect to the login page
+			// (You can use your preferred routing library for redirection)
+
+			navigate('/login')
 		}
+	}, [userId, accessToken])
 
-		fetchUserDetails()
-	}, [userId])
+	if (loading) {
+		return <Loader />
+	}
 
-	if (!user) {
-		return <div>Loading...</div>
+	if (error) {
+		return <SessionExpiredMessage message={error} />
 	}
 	return (
 		<>
-			<section className={`grid gap-2 ${styles.paddingX} pt-5`}>
-				<div className="col-start-1 col-span-4 h-screen items-center justify-center pl-72 md:pl-72 sm:pl-20">
+			<section className="container">
+				<div className="max-w-screen-xl">
 					<div
-						className="flex  bg-cover bg-no-repeat h-auto max-w-full rounded-md shadow-xl shadow-dark-blue  py-4 my-8"
-						style={{ backgroundImage: `url(${herobg})` }}
+						className="flex bg-cover max-w-full bg-no-repeat h-1/2 rounded-md shadow-xl shadow-dark-blue py-4 my-8"
+						style={{
+							backgroundImage: `url(${herobg})`,
+						}}
 					>
-						{' '}
 						<h1
-							className={`${styles.heroHeadText}  justify-center items-center orange-text-gradient py-0 mx-auto`}
+							className={`${styles.sectionHeadText} justify-center items-center orange-text-gradient mx-auto`}
 						>
 							Dashboard
 						</h1>
 					</div>
+				</div>
 
-					<div className="flex h-auto max-w-full rounded-lg shadow-lg shadow-sky-blue-700 bg-white-100 ">
-						<div className="w-3/5 justify-center items-center my-4">
-							<h1
-								className={`${styles.dashSubText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
-							>
-								{user.firstName} {user.lastName}
-							</h1>
-							<span
-								className={`${styles.dashSubText} justify-center items-center mx-2 text-white-950 text-[16px] flex`}
-							>
-								{user.email}
-							</span>
+				<div className="flex h-auto max-w-full rounded-lg shadow-lg shadow-sky-blue-700 bg-white-100 mx-auto">
+					<div className="w-3/5 justify-center items-center my-4">
+						<h1
+							className={`${styles.dashSubText} justify-center items-center pt-2 px-4 blue-text-gradient text-[18px] flex`}
+						>
+							{userData.firstName} {userData.lastName}
+						</h1>
+						<span
+							className={` justify-center items-center mx-2 text-white-950 text-[14px] flex`}
+						>
+							{userData.email}
+						</span>
 
-							<span
-								className={`blue-text-gradient ${styles.sectionSubText} justify-center items-center flex`}
-							>
-								@
-							</span>
-							<span
-								className={`${styles.dashSubText} justify-center items-center mx-2 text-white-950 text-[16px] flex`}
-							>
-								SkyAge IT Services Pvt. Ltd.
-							</span>
-						</div>
-						<div className="w-2/5 items-start justify-center">
-							<img
-								src={profile}
-								className="justify-center p-4 rounded-lg flex"
-								alt="profile"
+						<span
+							className={`blue-text-gradient justify-center items-center flex`}
+						>
+							@
+						</span>
+						<span
+							className={` justify-center items-center mx-2 text-white-950 text-[16px] flex`}
+						>
+							SkyAge IT Services Pvt. Ltd.
+						</span>
+					</div>
+					<div className="w-2/5 items-start justify-center">
+						<img
+							src={profile}
+							className="justify-center p-4 rounded-lg flex"
+							alt="profile"
+						/>
+					</div>
+				</div>
+				<div className="w-full bg-blue-300 p-4">
+					<div className="flex  mx-auto justify-center items-center">
+						<button className="inline-flex px-3 py-2 text-sky-blue-600 border border-sky-blue-600 rounded-md mb-3 mx-2 text-[12px]">
+							<FaEdit size={20} color="blue" className="mx-2" />
+							Edit
+						</button>
+						<button className="inline-flex px-3 py-2 text-sky-orange-600 border border-sky-orange-600 rounded-md mb-3 mx-2 text-[12px]">
+							<FaTrashAlt
+								size={20}
+								color="red"
+								className="mx-2"
 							/>
-							<div className="flex flex-wrap items-start justify-center">
-								<button className="inline-flex px-3 py-2 text-sky-orange-600 hover:text-sky-orange-700 focus:text-sky-orange-700 hover:bg-sky-orange-100 focus:bg-sky-orange-100 border border-sky-orange-600 rounded-md mb-3">
-									<svg
-										aria-hidden="true"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-										className="flex-shrink-0 h-5 w-5 -ml-1 mt-0.5 mr-2"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-										/>
-									</svg>
-									Delete
-								</button>
-								<button className="inline-flex px-3 py-2 text-white bg-sky-blue-600 hover:bg-sky-blue-700 focus:bg-sky-blue-700 rounded-md mx-2 mb-3">
-									<svg
-										aria-hidden="true"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-										className="flex-shrink-0 h-6 w-6 text-white -ml-1 mr-2"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-										/>
-									</svg>
-									Upload
-								</button>
-							</div>
-						</div>
+							Delete
+						</button>
+						<button className="inline-flex px-3 py-2 text-white text-sky-blue-600 border border-sky-blue-700 focus:bg-sky-blue-700 rounded-md mx-2 mb-3 text-[12px]">
+							<FaUpload size={20} color="blue" className="mx-2" />
+							Upload
+						</button>
 					</div>
-					<div className="container mx-auto pt-4">
-						<div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
-							<div className="rounded-lg shadow-lg shadow-sky-blue-700 bg-white-200 pt-2 mt-2 flex items-center justify-center">
-								{/* <div className="flex">
+				</div>
+				<div className="items-center justify-center py-2 mx-auto  hidden xl:block 2xl:block lg:block md:flex sm:flex">
+					<h1
+						className={`${styles.dashSubText} flex-wrap justify-center items-center orange-text-gradient text-[18px]`}
+					>
+						Demo Details
+					</h1>
+				</div>
+
+				<div className="flex h-auto max-w-full rounded-md shadow-md shadow-sky-blue-700 my-5 mx-auto">
+					<h1
+						className={`${styles.dashSubText} hidden lg:block flex-wrap justify-center items-center orange-text-gradient text-[18px] m-auto`}
+					>
+						Demo Details
+					</h1>
+					<div className="flex flex-wrap justify-center gap-2">
+						{demos.map((demo) => (
+							<Card
+								key={demo.id}
+								title={demo.title}
+								data={{ Count: demo.count }}
+								className="w-[250px] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4"
+							/>
+						))}
+					</div>
+				</div>
+				<div className="flex flex-wrap -mx-4">
+					{demos.map((demo) => (
+						<div
+							key={demo.id}
+							className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4 px-4 mb-4 flex-row"
+						>
+							<div className="bg-white rounded-lg shadow-md shadow-sky-blue-700 p-6">
 								<h1
-									className={`${styles.dashHeadText} justify-center items-center pt-4 px-4 blue-text-gradient text-[18px] flex`}
+									className={`${styles.dashSubText} justify-center items-center pt-2 px-4 blue-text-gradient text-[18px] flex`}
 								>
-									Demo
+									Card
 								</h1>
-							</div> */}
-								<div className="flex items-center justify-center">
-									<ul className="pt-2 pb-4 space-y-1 text-sm">
-										<h1
-											className={`${styles.heroSubText} justify-center items-center p-4 px-4 orange-text-gradient text-2xl flex`}
-										>
-											Demo
-										</h1>
-										{demos.map((demo, index) => (
-											<>
-												<li
-													key={index}
-													className={`text-sm text-white-950 flex items-center  px-2`}
-												>
-													<span
-														className={`w-10 h-10 block float-left mr-1 items-center `}
-													>
-														{demo.icon}
-													</span>
-
-													<span
-														className={`flex-1 ${styles.dashSubText}`}
-													>
-														{demo.title + ' :'}
-													</span>
-													<span
-														className={`float-right text-[18px] ${styles.dashSubText} ml-5`}
-													>
-														{demo.count}
-													</span>
-												</li>
-											</>
-										))}
-									</ul>
-								</div>
-							</div>
-
-							<div class=" flex flex-col justify-center  bg-white-950 ">
-								<div class="bg-white shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
-									<div class="mx-auto max-w-md">
-										<h1>Demo</h1>
-										<div class="divide-y divide-gray-300/50">
-											<div class="space-y-6 py-8 text-base leading-7 text-gray-600">
-												<p>Information for card</p>
-												<ul class="space-y-4">
-													<li class="flex items-center">
-														<svg
-															class="h-6 w-6 flex-none fill-sky-100 stroke-sky-500 stroke-2"
-															stroke-linecap="round"
-															stroke-linejoin="round"
-														>
-															<circle
-																cx="12"
-																cy="12"
-																r="11"
-															/>
-															<path
-																d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9"
-																fill="none"
-															/>
-														</svg>
-														<p class="ml-4">
-															Option 1
-														</p>
-													</li>
-													<li class="flex items-center">
-														<svg
-															class="h-6 w-6 flex-none fill-sky-100 stroke-sky-500 stroke-2"
-															stroke-linecap="round"
-															stroke-linejoin="round"
-														>
-															<circle
-																cx="12"
-																cy="12"
-																r="11"
-															/>
-															<path
-																d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9"
-																fill="none"
-															/>
-														</svg>
-														<p class="ml-4">
-															Option
-															<code class="text-sm font-bold text-gray-900">
-																@apply
-															</code>
-														</p>
-													</li>
-													<li class="flex items-center">
-														<svg
-															class="h-6 w-6 flex-none fill-sky-100 stroke-sky-500 stroke-2"
-															stroke-linecap="round"
-															stroke-linejoin="round"
-														>
-															<circle
-																cx="12"
-																cy="12"
-																r="11"
-															/>
-															<path
-																d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9"
-																fill="none"
-															/>
-														</svg>
-														<p class="ml-4">
-															Option 3
-														</p>
-													</li>
-												</ul>
-											</div>
-											<div class="pt-8 text-base font-semibold leading-7"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div className="rounded-lg shadow-lg shadow-sky-blue-700 bg-white-200 p-2 py-2 my-2 flex items-center justify-center">
-								<div className="flex items-center justify-center">
-									<ul className="pt-2 pb-4 space-y-1 text-sm">
-										<h1
-											className={`${styles.heroSubText} justify-center items-center p-4 px-4 orange-text-gradient text-[18px] flex`}
-										>
-											Education Background
-										</h1>
-										{demos.map((demo, index) => (
-											<>
-												<li
-													key={index}
-													className={`text-sm text-white-950 flex items-center py-2 px-2`}
-												>
-													<span
-														className={`flex-1 text-[18px] ${styles.dashSubText}`}
-													>
-														{demo.title + ' :'}
-													</span>
-													<span
-														className={`float-left text-[18px]ml-5`}
-													>
-														{
-															'Institude/College/School/Certificates'
-														}
-													</span>
-												</li>
-											</>
-										))}
-									</ul>
+								<div className="gap-4">
+									<Card
+										key={demo.id}
+										title={demo.title}
+										data={{ Count: demo.count }}
+									/>
 								</div>
 							</div>
 						</div>
-					</div>
+					))}
 				</div>
 			</section>
 		</>

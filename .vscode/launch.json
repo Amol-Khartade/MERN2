@@ -1,0 +1,17 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "React: Brave",
+			"url": "http://localhost:3000",
+			"webRoot": "${workspaceFolder}/src",
+			"sourceMapPathOverrides": {
+				"webpack:///src/*": "${webRoot}/*"
+			},
+			"runtimeExecutable": "chrome", // Change "chrome" to "brave" to use Brave browser
+			"userDataDir": "${workspaceFolder}/.vscode/chrome" // This is an optional setting to use a specific profile for Brave, if needed
+		}
+	]
+}

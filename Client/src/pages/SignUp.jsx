@@ -1,4 +1,4 @@
-import { React, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
@@ -6,28 +6,7 @@ import { ser_ban, herobg, login } from '../assets'
 import { styles } from '../styles'
 
 const SignUp = () => {
-	// //Sign Up using paasport.js
-	// const [user, setUser] = useState(null)
-
-	// useEffect(() => {
-	// 	axios
-	// 		.get('http://localhost:5000/getUser', { withCredentials: true })
-	// 		.then((response) => {
-	// 			if (response.data) {
-	// 				setUser(response.data)
-	// 			}
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error('Error:', error)
-	// 		})
-	// }, [])
-
-	const handleGoogle = () => {
-		window.location.href = 'http://localhost:5000/auth/google'
-	}
-	// Sign Up using Email and Password
-	const history = useNavigate()
-
+	const [isLoading, setIsLoading] = useState(false)
 	const [firstName, setFirstName] = useState('')
 	const [lastName, setLastName] = useState('')
 	const [contact, setContact] = useState('')
@@ -35,9 +14,30 @@ const SignUp = () => {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [con_password, setConPassword] = useState('')
+	const navigate = useNavigate()
 
 	const handleSignup = (e) => {
 		e.preventDefault()
+		// Validate form inputs
+		if (
+			!firstName ||
+			!lastName ||
+			!contact ||
+			!dob ||
+			!email ||
+			!password ||
+			!con_password
+		) {
+			console.error('Please fill in all fields')
+			return
+		}
+
+		if (password !== con_password) {
+			console.error('Error: Passwords do not match')
+			return
+		}
+
+		setIsLoading(true)
 		const userData = {
 			firstName,
 			lastName,
@@ -48,17 +48,23 @@ const SignUp = () => {
 			con_password,
 		}
 
-		// Save user data to the database
 		axios
-			.post('http://localhost:5000/signup', userData)
+			.post(`http://localhost:5000/signup`, userData)
 			.then((response) => {
 				console.log('User data saved:', response.data)
-				// Redirect the user to the dashboard
-				history('/dashboard')
+				navigate('/dashboard')
+					
 			})
 			.catch((error) => {
 				console.error('Error:', error)
 			})
+			.finally(() => {
+				setIsLoading(false)
+			})
+	}
+
+	const handleGoogle = () => {
+		window.location.href = `http://localhost:5000/auth/google`
 	}
 
 	return (
@@ -286,6 +292,7 @@ const SignUp = () => {
 									<button
 										type="submit"
 										onClick={handleSignup}
+										disabled={isLoading}
 										data-te-ripple-init
 										data-te-ripple-color="light"
 										className="mb-2 w-full flex justify-center items-center rounded px-6 py-2.5 text-xs font-medium uppercase leading-normal text-white bg-gradient-to-r from-sky-blue-600 to-sky-orange-600 hover:from-sky-blue-800 hover:to-sky-orange-800 hover:text-sky-blue-300 lg:mx-2 sm:mx-4 pb-2.5 pt-3  text-white shadow-[0_4px_9px_-4px_#3b71ca] hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out item-center"
@@ -302,7 +309,7 @@ const SignUp = () => {
 											<path d="M255.988 32C160.473 32 78.934 91.804 46.727 176h34.639c9.396-20.484 22.457-39.35 38.868-55.762C156.497 83.973 204.709 64 255.988 64c51.286 0 99.504 19.973 135.771 56.239C428.027 156.505 448 204.719 448 256c0 51.285-19.973 99.501-56.239 135.765C355.494 428.029 307.275 448 255.988 448c-51.281 0-99.493-19.971-135.755-56.234-16.412-16.412-29.473-35.28-38.871-55.766H46.725c32.206 84.201 113.746 144 209.264 144C379.703 480 480 379.715 480 256c0-123.702-100.297-224-224.012-224z"></path>
 											<path d="M206.863 323.883l22.627 22.627L320 256l-90.51-90.51-22.628 22.628L258.745 240H32v32h226.745z"></path>
 										</svg>
-										Create Account
+										{isLoading ? 'Loading...' : 'Sign Up'}
 									</button>
 								</div>
 
@@ -315,6 +322,7 @@ const SignUp = () => {
 								<div className="relative mb-6 w-full inline-flex justify-center items-center">
 									<button
 										type="button"
+										onClick={handleGoogle}
 										data-te-ripple-init
 										data-te-ripple-color="light"
 										className="mb-2 w-full flex justify-center items-center rounded px-6 py-2.5 text-xs font-medium uppercase leading-normal text-white bg-gradient-to-r from-sky-blue-600 to-sky-orange-600 hover:from-sky-blue-800 hover:to-sky-orange-800 hover:text-sky-blue-300 lg:mx-2 sm:mx-4 pb-2.5 pt-3  text-white shadow-[0_4px_9px_-4px_#3b71ca] hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out item-center"
@@ -352,7 +360,6 @@ const SignUp = () => {
 								<div className="relative mb-6 w-full inline-flex justify-center items-center">
 									<button
 										type="button"
-										onClick={handleGoogle}
 										data-te-ripple-init
 										data-te-ripple-color="light"
 										className="mb-2 w-full flex justify-center items-center rounded px-6 py-2.5 text-xs font-medium uppercase leading-normal text-white bg-gradient-to-r from-sky-blue-600 to-sky-orange-600 hover:from-sky-blue-800 hover:to-sky-orange-800 hover:text-sky-blue-300 lg:mx-2 sm:mx-4 pb-2.5 pt-3  text-white shadow-[0_4px_9px_-4px_#3b71ca] hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out item-center"

@@ -17,4 +17,17 @@ router.get(
 	}
 )
 
+// Logout route
+router.post('/logout', (req, res) => {
+	// Clear the session data and remove the token cookie
+	req.session.destroy((err) => {
+		if (err) {
+			console.error(err)
+			return res.status(500).json({ message: 'Internal server error' })
+		}
+		res.clearCookie('token')
+		return res.status(200).json({ message: 'Logout successful' })
+	})
+})
+
 module.exports = router
